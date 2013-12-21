@@ -5,8 +5,6 @@ A light-weight, powerful and very customizable orm/dao framework.
 <p>The <b>BlueprintDao</b> is a light-weight <b>JDBC</b> convenience layer. All that can be done in <b>JDBC</b>
 can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements or for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.</p>
 
-===============================
-
 <h2>Getting Started</h2>
 
 <h4>Mapping entities with annotations:</h4>
@@ -58,6 +56,19 @@ interface to became detectable on futures queries and updates. If you run a quer
 the example above, a determined <tt>SetType</tt> will be filled with the respective enums values:<br/>
 <tt>[TRAILERS, DELETED_SCENES, COMMENTARIES]</tt></p>
 
+<h5>Mapping inherited entities with annotations:</h5>
+<p>When an entity is inherited, the <tt>@EntityID</tt> is annotated above the class.</p>
+<pre>
+@EntityTable("customer")
+@EntityID("customer_id")
+public class Customer extends Person {
+	
+	@EntityColumn("company")
+	private String company;
+
+	...
+</pre>
+
 ======================
 <h4>Starting a Session:</h4>
 <p>A session is created for an more efficient management of the created daos, all of them will use the same connection and will share <tt>PrepareStatement</tt> mappings. A <tt>PreparedStatement</tt> is never created twice in a session. The <tt>SessionManager</tt> superclass will also control all the created entities and <tt>ResultSet</tt> mapped columns.</p>
@@ -90,7 +101,7 @@ try {
 	
 	Customer customer = new Customer();
 	customer.setId(person.getId());
-	customer.setPhone("xxxx-xxxx");
+	customer.setCompany("xxxxxxxx");
 	customerDao.save(customer);
 	
 	transaction.end();
