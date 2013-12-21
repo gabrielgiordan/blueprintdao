@@ -36,25 +36,21 @@ public class Film {
 	@EntityObject("original_language_id")
 	private Language originalLanguage;
 	
-	@EntityColumn("rating")
-	private Rating rating; // Enum type
-	
 	@EntityColumn("special_features")
 	private SetType&lt;SpecialFeatures&gt; specialFeatures; // MySQL enum set type
 	
 	@EntityList
 	private List&lt;FilmActor&gt; actors;
 	
-	...
 </pre>
 
-<p>The <tt>special_features</tt> column contains the following MySQL set type:<br/>
+<p>The <tt>special_features</tt> column contains the following <b>MySQL</b> set type:<br/>
 <tt>set('Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes')</tt></p>
 
 <p>In Java, the <tt>SpecialFeatures</tt> is an enum that implements the <tt>EnumType</tt> 
 interface to became detectable on futures queries and updates. If you run a query on
 the example above, a determined <tt>SetType</tt> will be filled with the respective enums values:<br/>
-<tt>[TRAILERS, DELETED_SCENES, COMMENTARIES]</tt></p>
+<tt>[TRAILERS, DELETED_SCENES, COMMENTARIES]</tt>. For more details, the <b>JavaDoc</b> is included.</p>
 
 <h5>Mapping inherited entities with annotations:</h5>
 <p>When an entity is inherited, the <tt>@EntityID</tt> is annotated above the class.</p>
@@ -65,9 +61,88 @@ public class Customer extends Person {
 	
 	@EntityColumn("company")
 	private String company;
-
-	...
+	
 </pre>
+
+<h2>The Blueprint</h2>
+<p>All the DAO classes should extend the <tt><b><i>blueprint.Blueprint</i></b></tt> abstract class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:</p>
+
+<pre>
+public class CountryDao extends Blueprint&lt;Country&gt; {
+
+	public CountryDao(Session session) {
+		super(session);
+	}
+	
+	public List&lt;Country&gt; listByContinent(Continent continent) {
+		
+		setStatement("SELECT * FROM country WHERE Continent = ?");
+		
+		addPlaceholderValue(continent); //enum
+		
+		return runSeveralRows();
+	}
+}
+</pre>
+
+<h4>The ResultSetListener</h4>
+<p>Suppose you want to do whatever you want with each Country row in a query, so the <b>ResultSetListener</b> was created for this purpose. It returns the ResultSet and the Country on each row iteration. For example, suppose you have a non-mapped column and want to obtain it:</p>
+
+<pre>
+public List&lt;CountryRank&gt; getLifeExpectancyRank(int rankSize) {
+		
+	setStatement("SET @rank=0");
+	runUpdate();
+		
+	setStatement("SELECT @rank:=@rank+1 AS rank, country.* " +
+	             "FROM country ORDER BY LifeExpectancy DESC LIMIT 0, ?");
+	             
+	addPlaceholderValue(rankSize);
+		
+	final List&lt;CountryRank&gt; ranking = new ArrayList&lt;&gt;();
+		
+	nextSeveralRows(new ResultSetListener() {
+
+		@Override
+		protected void performAction(ResultSet resultSet, Country next) throws SQLException {
+			
+			CountryRank rank = new CountryRank();
+			
+			rank.setCountry(next);
+			rank.setRank(resultSet.getInt("rank"));
+			
+			ranking.add(rank);
+		}
+	});
+		
+	return ranking;
+}
+</pre>
+
+<h2>The BlueprintDao</h2>
+<p>The <tt><b><i>blueprint.BlueprintDao</i></b></tt> class extends the <tt><b><i>blueprint.Blueprint</i></b></tt> abstract class, so you can also use it to build your data access object class. The <b>BlueprintDao</b> is a prepared DAO, that contains all the <b>CRUD</b> methods of a common DAO class.</p>
+<p>To use it without extend is pretty simple:</p>
+<pre>
+BlueprintDao&lt;Person&gt; personDao = new BlueprintDao&lt;Person&gt;(session) {};
+
+session.begin();
+for(Person person : personDao.list()) {
+	//do something
+}
+session.end();
+</pre>
+<p>This class also supports String identities or whatever numberic types supported by the framework:
+<br/><tt>
+Country country = countryDao.search("USA");
+</tt></p>
+<p>If you're working with <b>Oracle</b> databases, you can set the sequence that can be used inside a transaction scope:
+<br/><tt>
+personDao.useSequence("sq_person");
+</tt></p>
+<p>In other databases like <b>MySQL</b> you just request an auto-increment use:
+<br/><tt>
+personDao.useIncrement(true);
+</tt></p>
 
 ======================
 <h4>Starting a Session:</h4>
@@ -135,14 +210,5 @@ try {
 	<dd><tt>SetType and EnumType</tt></dd>
 </dl>
 
-
-
-
-
-
-
-
-
-... to be continued.
-
-<p>Requires Java 7 and above.</p>
+========================
+<p>Any grammar errors, contact me. My native language is portuguese. Greetings! :)</p>
