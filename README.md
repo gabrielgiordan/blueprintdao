@@ -211,4 +211,4 @@ try {
 </dl>
 
 ========================
-<p>Any grammar errors, contact me. My native language is portuguese. Greetings! :)</p>
+<p>Any grammar errors, contact me; my native language is portuguese. Greetings from Brazil!</p>
