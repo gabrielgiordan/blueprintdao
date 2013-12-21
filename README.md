@@ -11,9 +11,9 @@ annotated on an <tt>@EntityTable</tt> annotation.</p>
 <p>An identity is recognized by an <tt>@EntityID</tt> annotation.
 Same as columns with <tt>@EntityColumn</tt> annotations, foreigners with 
 <tt>@EntityObject</tt> annotations and also other tables 
-with <tt>@EntityList</tt> annotations, without parameters.<br/>
-An <tt>@EntityList</tt> annotated class should 
-contain an identity that associate the class being annotated.</p>
+with <tt>@EntityList</tt> annotations with no parameters.<br/>
+The generic type class of the list annotated with an <tt>@EntityList</tt> should 
+contain an identity that associate the current class being annotated.</p>
 
 <p>Below is an example of a bean class using the <b>BlueprintDao</b> framework:</p>
 
