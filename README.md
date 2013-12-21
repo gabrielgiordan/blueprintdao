@@ -143,6 +143,7 @@ personDao.useSequence("sq_person");
 <br/><tt>
 personDao.useIncrement(true);
 </tt></p>
+<p>When a sequence or an increment is used, the <tt>personDao.save(person)</tt> method will generate and set the identity to the <tt>Person</tt> instance passed as parameter.</p>
 
 ======================
 <h4>Starting a Session:</h4>
