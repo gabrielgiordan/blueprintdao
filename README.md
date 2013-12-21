@@ -5,7 +5,7 @@ A light-weight, powerful and very customizable orm/dao framework.
 <p>The <b>BlueprintDao</b> is a light-weight <b>JDBC</b> convenience layer. All that can be done in <b>JDBC</b>
 can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements or for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.</p>
 
-<h2>Getting Started</h2>
+<h2>An Introduction</h2>
 
 <h4>Mapping entities with annotations:</h4>
 <p>The <b>BlueprintDao</b> framework recognizes a table by the value
