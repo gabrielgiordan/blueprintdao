@@ -62,7 +62,8 @@ the example above, a determined <tt>SetType</tt> will be filled with the respect
 
 <dl>
 	<dt><tt>java.lang</tt></dt>
-	<dd><tt>Long/long, Integer/int, Double/double, Float/float, Short/short, Byte/byte, Boolean/boolean, Enum/enum, String.</tt></dd>
+	<dd><tt>Long/long, Integer/int, Double/double, Float/float, Short/short, Byte/byte, Boolean/boolean</tt>
+	<tt>Enum/enum, String.</tt></dd>
 	
 	<dt><tt>java.math</tt></dt>
 	<dd><tt>BigDecimal</tt></dd>
