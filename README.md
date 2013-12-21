@@ -3,7 +3,9 @@ BlueprintDao
 A light-weight, powerful and very customizable orm/dao framework.
 
 <p>The <b>BlueprintDao</b> is a light-weight <b>JDBC</b> convenience layer. All that can be done in <b>JDBC</b>
-can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements and for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.</p>
+can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements or for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.</p>
+
+===============================
 
 <h2>Getting Started</h2>
 
@@ -56,6 +58,47 @@ interface to became detectable on futures queries and updates. If you run a quer
 the example above, a determined <tt>SetType</tt> will be filled with the respective enums values:<br/>
 <tt>[TRAILERS, DELETED_SCENES, COMMENTARIES]</tt></p>
 
+======================
+<h4>Starting a Session:</h4>
+<p>A session is created for an more efficient management of the created daos, all of them will use the same connection and will share <tt>PrepareStatement</tt> mappings. A <tt>PreparedStatement</tt> is never created twice in a session. The <tt>SessionManager</tt> superclass will also control all the created entities and <tt>ResultSet</tt> mapped columns.</p>
+
+<p>When a session is ended, all the created <tt>PreparedStatement</tt> instances are closed, as the <tt>Connection</tt> passed as parameter. So a session should be created in manner that all the queries and transactions uses it.</p>
+
+<p>Below is a simple example of beginning and ending a session:</p>
+<pre>
+ConnectionFactory factory = new ConnectionFactory(); //your connection factory
+Session session = new Session(factory.getConnection());
+
+session.begin();
+//queries and transactions here
+session.end();
+</pre>
+
+<h5>Starting a Transaction:</h5>
+<p>Inside of a session scope, transactions are performed.
+Below is an example of a simple transaction.</p>
+
+<pre>
+try {
+	Transaction transaction = session.transaction();
+	transaction.begin();
+	
+	Person person = new Person();
+	person.setName("xxxx xxxxxx");
+	personDao.useSequence("sq_person")
+	personDao.save(person); //generate and fill the id
+	
+	Customer customer = new Customer();
+	customer.setId(person.getId());
+	customer.setPhone("xxxx-xxxx");
+	customerDao.save(customer);
+	
+	transaction.end();
+} catch (TransactionException e) {
+	transaction.rollback();
+}
+</pre>
+
 ========================
 <h4>Supported types:</h4>
 <p>Moreover, the <b>BlueprintDao</b> supports all the common types, like <tt><b><i>java.lang</i></b></tt> types and the <tt><b><i>java.sql</i></b></tt> types. Below is an list of the supported Java types:</p>
@@ -81,8 +124,7 @@ the example above, a determined <tt>SetType</tt> will be filled with the respect
 	<dd><tt>SetType and EnumType</tt></dd>
 </dl>
 
-===============================
-<h4>The BlueprintDao tool:</h4>
+
 
 
 
