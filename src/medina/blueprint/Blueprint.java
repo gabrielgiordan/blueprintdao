@@ -30,9 +30,9 @@ public abstract class Blueprint<E> extends Engine<E>
 		statementTool = new StatementTool<E>(defaultClass) {};
 		
 		objectsSettings.setFillObjects(true);
-		objectsSettings.setFillSubObjects(true);
+		objectsSettings.setFillSubObjects(false);
 		
-		listsSettings.setFillLists(true);
+		listsSettings.setFillLists(false);
 		listsSettings.setFillSubLists(false);
 	}
 	
