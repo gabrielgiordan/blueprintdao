@@ -184,7 +184,7 @@ try {
 
 <h2>The Engine</h2>
 <p>The <tt><b><i>Engine</i></b></tt> class has a different way to execute queries than other frameworks, all DAO classes will make use of it. First, when a query is performed, the engine fill the identity and columns fields of instantiated objects while associating the foreign key to the instantiated object. When it's done, a subsequent query is performed automatically, with only the non-repeated foreign keys and their respective objects are filled with the foreign objects.</p>
-<p>For example, the table <tt>city</tt> has a foreign key that identifies a <tt>country</tt>, so if you run a <tt>SELECT * FROM city</tt> query, the <tt><b><i>Engine</i></b></tt> will perform a subsequent <tt>SELECT * FROM country WHERE Code = ?</tt> query, but never repeating a value.</p>
+<p>For example, the table <tt>city</tt> has a foreign key that identifies a <tt>country</tt>, so if you run a <tt>SELECT * FROM city</tt> query, the <tt><b><i>Engine</i></b></tt> will perform a subsequent <tt>SELECT * FROM country WHERE Code = ?</tt> query, but never repeating a parameter value.</p>
 <p>This can be verified printing all hash codes of <tt>Country</tt> objects of the resulted query.</p>
 <p></p>
 <pre>
