@@ -32,12 +32,12 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 	final EntityObjectsSettings objectsSettings;
 	final EntityListsSettings listsSettings;
 
-	PreparedStatement statement;
+	private PreparedStatement statement;
 	ResultSet resultSet;
 	
 	private final Collection<Object> placeholderValues;
 	
-	String sql;
+	private String sql;
 	
 	// Constructors____________________________________________________________________ //
 	
@@ -158,13 +158,6 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 	protected void resetAllPlaceholderValues()
 	{
 		placeholderValues.clear();
-	}
-	
-	public static void main(String[] args)
-	{
-		Engine<Object> e = new Engine<Object>(null) {};
-		
-		e.runCustomAutoIncrementInsert(Long.TYPE);
 	}
 	
 	@Override
