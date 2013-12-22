@@ -216,7 +216,7 @@ Country: United States - HashCode: 581840912 - City: Philadelphia
 The <tt>world</tt> database can be downloaded at the official <a href="http://dev.mysql.com/doc/world-setup/en/index.html"><b>MySQL</b></a> site.</p>
 
 <h4>Restricting the Engine</h4>
-<p>Restrictions can also be added to the <tt>country</tt> entity when making a <tt>city</tt> query. If some columns or objects aren't needed, you can get the restrictions configuration of concerning the DAO class:</p>
+<p>Restrictions can also be added to the <tt>country</tt> entity when making a <tt>city</tt> query. If some columns or objects aren't needed, you can get the restrictions configuration of the concerning DAO class:</p>
 
 <tt>EntityObjectsSettings settings = cityDao.getObjectsSettings();</tt>
 
