@@ -144,7 +144,7 @@ personDao.useIncrement(true);
 <p>When a sequence or an increment is used, the <tt>personDao.save(person)</tt> method will generate and set the identity to the <tt>Person</tt> instance passed as parameter.</p>
 
 ======================
-<h4>Starting a Session:</h4>
+<h2>The Session</h2>
 <p>A session is created for an more efficient management of the created daos, all of them will use the same connection and will share <tt>PrepareStatement</tt> mappings. A <tt>PreparedStatement</tt> is never created twice in a session. The <tt>SessionManager</tt> superclass will also control all the created entities and <tt>ResultSet</tt> mapped columns.</p>
 
 <p>When a session is ended, all the created <tt>PreparedStatement</tt> instances are closed, as the <tt>Connection</tt> passed as parameter. So a session should be created in manner that all the queries and transactions uses it.</p>
@@ -185,8 +185,8 @@ try {
 </pre>
 
 ========================
-<h4>Supported types:</h4>
-<p>Moreover, the <b>BlueprintDao</b> supports all the common types, like <tt><b><i>java.lang</i></b></tt> types and the <tt><b><i>java.sql</i></b></tt> types. Below is an list of the supported Java types:</p>
+<h2>Supported Types</h2>
+<p>Moreover, the <b>BlueprintDao</b> supports all the common types, like <tt><b><i>java.lang</i></b></tt> types and the <tt><b><i>java.sql</i></b></tt> types. Below is an list of the supported types:</p>
 
 <dl>
 	<dt><tt>java.lang</tt></dt>
