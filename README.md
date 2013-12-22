@@ -210,5 +210,8 @@ try {
 </dl>
 
 ========================
-<p>Any grammar errors, contact me. My native language is portuguese.</p> 
-<p>Greetings from Brazil!</p>
+<h2>Finally</h2>
+Any grammar errors, contact me. My native language is Portuguese.
+Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
+The <b>BlueprintDao</b> is still in progress, so I do not guarantee anything.<br/>
+Greetings from Brazil! :]
