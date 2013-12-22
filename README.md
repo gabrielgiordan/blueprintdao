@@ -212,7 +212,7 @@ Country: United States - HashCode: 581840912 - City: Houston
 Country: United States - HashCode: 581840912 - City: Philadelphia
 ...
 </pre>
-<p>In this example, a query of 4079 cities with their respective countries, took 2.1 seconds to be done without restrictions using <b>MySQL</b>.<br/>
+<p>In this example, a query of 4079 cities with their respective countries, took 781ms to be done without restrictions using <b>MySQL</b>.<br/>
 The <tt>world</tt> database can be downloaded at the official <a href="http://dev.mysql.com/doc/world-setup/en/index.html"><b>MySQL</b></a> site.</p>
 
 <h4>Restricting the Engine</h4>
