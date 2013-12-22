@@ -210,7 +210,7 @@ try {
 </dl>
 
 <h2>Finally</h2>
+The <b>BlueprintDao</b> is still in progress, so I do not guarantee anything.<br/>
 Any grammar errors, contact me. My native language is Portuguese.<br/>
-Also any suggestions, support and collaboration requests, I'll be very grateful to attend.<br/>
-The <b>BlueprintDao</b> is still in progress, so I do not guarantee anything.
+Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
 <p>Greetings from Brazil! :]</p>
