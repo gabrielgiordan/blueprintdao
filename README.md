@@ -57,7 +57,7 @@ the example above, a determined <tt>SetType</tt> will be filled with the respect
 @EntityID("customer_id")
 public class Customer extends Person {
 	
-	@EntityColumn("company")
+	@EntityColumn
 	private String company;
 	
 </pre>
