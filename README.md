@@ -63,7 +63,7 @@ public class Customer extends Person {
 </pre>
 
 <h2>The Blueprint</h2>
-<p>All the DAO classes should extend the <tt><b><i>blueprint.Blueprint</i></b></tt> abstract class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:</p>
+<p>All the DAO classes should extend the <tt><b><i>Blueprint</i></b></tt> abstract class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:</p>
 
 <pre>
 public class CountryDao extends Blueprint&lt;Country&gt; {
@@ -118,7 +118,7 @@ public List&lt;CountryRank&gt; getLifeExpectancyRank(int rankSize) {
 </pre>
 
 <h2>The BlueprintDao</h2>
-<p>The <tt><b><i>blueprint.BlueprintDao</i></b></tt> class extends the <tt><b><i>blueprint.Blueprint</i></b></tt> abstract class, so you can also use it to build your data access object class. The <b>BlueprintDao</b> is a prepared DAO, that contains all the <b>CRUD</b> methods of a common DAO class.</p>
+<p>The <tt><b><i>BlueprintDao</i></b></tt> class extends the <tt><b><i>Blueprint</i></b></tt> abstract class, so you can also use it to build your data access object class. The <b>BlueprintDao</b> is a prepared DAO, that contains all the <b>CRUD</b> methods of a common DAO class.</p>
 <p>To use it without extend is pretty simple:</p>
 <pre>
 BlueprintDao&lt;Person&gt; personDao = new BlueprintDao&lt;Person&gt;(session) {};
@@ -209,9 +209,8 @@ try {
 	<dd><tt>SetType and EnumType</tt></dd>
 </dl>
 
-========================
 <h2>Finally</h2>
-Any grammar errors, contact me. My native language is Portuguese.
-Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
-The <b>BlueprintDao</b> is still in progress, so I do not guarantee anything.<br/>
-Greetings from Brazil! :]
+Any grammar errors, contact me. My native language is Portuguese.<br/>
+Also any suggestions, support and collaboration requests, I'll be very grateful to attend.<br/>
+The <b>BlueprintDao</b> is still in progress, so I do not guarantee anything.
+<p>Greetings from Brazil! :]</p>
