@@ -6,6 +6,8 @@
 .project
 .metadata
 bin/
+src/example/
+lib/
 tmp/
 *.tmp
 *.bak
