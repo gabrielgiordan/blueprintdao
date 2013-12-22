@@ -236,6 +236,8 @@ The <tt>world</tt> database can be downloaded at the official <a href="http://de
 <p>So, when writing a query, you don't need to use joins to return columns, but to perform searches. 
 When writing a join, be aware to select only the current table columns, so the query will be faster.</p>
 
+<p>A second <tt><b><i>Engine</i></b></tt> alternative will be writed in future releases.</p>
+
 <h2>Supported Types</h2>
 <p>Moreover, the <b>BlueprintDao</b> supports all the common types, like <tt><b><i>java.lang</i></b></tt> types and the <tt><b><i>java.sql</i></b></tt> types. Below is an list of the supported types:</p>
 
