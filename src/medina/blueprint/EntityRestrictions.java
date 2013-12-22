@@ -1,16 +1,16 @@
-/* Copyright (C) 2013 Gabriel Giordano
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+/*
+ * Copyright (C) 2013 Gabriel Giordano
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License. */
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package medina.blueprint;
 
 import java.util.Collection;
@@ -23,168 +23,140 @@ import medina.blueprint.AbstractEntity.EntityListener;
 import medina.blueprint.AbstractEntity.ObjectScope;
 import medina.blueprint.dao.RestrictionsSettings;
 
-class EntityRestrictions implements RestrictionsSettings
-{
+class EntityRestrictions implements RestrictionsSettings {
 
-	private Map<Class<?>, Collection<String>> restrictions;
-	private Collection<Class<?>> resctrictedClasses;
+  private Map<Class<?>, Collection<String>> restrictions;
+  private Collection<Class<?>> resctrictedClasses;
 
-	EntityRestrictions()
-	{
+  EntityRestrictions() {
 
-		restrictions = new HashMap<>();
-		resctrictedClasses = new HashSet<>();
-	}
+    restrictions = new HashMap<>();
+    resctrictedClasses = new HashSet<>();
+  }
 
-	@Override
-	public boolean isClassRestricted(Class<?> clazz)
-	{
-		return resctrictedClasses.contains(clazz);
-	}
+  @Override
+  public boolean isClassRestricted(final Class<?> clazz) {
+    return resctrictedClasses.contains(clazz);
+  }
 
-	@Override
-	public boolean containsRestrictions(Class<?> clazz)
-	{
-		return restrictions.containsKey(clazz);
-	}
-	
-	protected boolean containsRestrictions(Entity entity)
-	{
-		return containsRestrictions(entity.getEntityClass());
-	}
+  @Override
+  public boolean containsRestrictions(final Class<?> clazz) {
+    return restrictions.containsKey(clazz);
+  }
 
-	@Override
-	public void restrictClass(Class<?> clazz)
-	{
-		resctrictedClasses.add(clazz);
-	}
+  protected boolean containsRestrictions(final Entity entity) {
+    return containsRestrictions(entity.getEntityClass());
+  }
 
-	@Override
-	public void restrictColumns(Class<?> clazz, String... columns)
-	{
+  @Override
+  public void restrictClass(final Class<?> clazz) {
+    resctrictedClasses.add(clazz);
+  }
 
-		Collection<String> restrictedColumns = new LinkedHashSet<>();
+  @Override
+  public void restrictColumns(final Class<?> clazz, final String... columns) {
 
-		for (String column : columns)
-		{
-			restrictedColumns.add(column);
-		}
+    final Collection<String> restrictedColumns = new LinkedHashSet<>();
 
-		restrictions.put(clazz, restrictedColumns);
-	}
+    for (final String column : columns) {
+      restrictedColumns.add(column);
+    }
 
-	@Override
-	public void restrictFields(Class<?> clazz, final String... fields)
-	{
+    restrictions.put(clazz, restrictedColumns);
+  }
 
-		Entity entity = SessionManager.getEntity(clazz);
+  @Override
+  public void restrictFields(final Class<?> clazz, final String... fields) {
 
-		final Collection<String> restrictedColumns = new LinkedHashSet<>();
+    final Entity entity = SessionManager.getEntity(clazz);
 
-		entity.nextSeveralVariables(new EntityListener()
-		{
+    final Collection<String> restrictedColumns = new LinkedHashSet<>();
 
-			@Override
-			public void performAction(EntityEvent event)
-			{
+    entity.nextSeveralVariables(new EntityListener() {
 
-				if (event.hasField())
-				{
-					for (String field : fields)
-					{
+      @Override
+      public void performAction(final EntityEvent event) {
 
-						if (event.getField().equals(field))
-						{
-							restrictedColumns.add(event.getLabel());
-						}
-					}
-				}
-			}
-		});
+        if (event.hasField()) {
+          for (final String field : fields) {
 
-		restrictions.put(clazz, restrictedColumns);
-	}
+            if (event.getField().equals(field)) {
+              restrictedColumns.add(event.getLabel());
+            }
+          }
+        }
+      }
+    });
 
-	@Override
-	public void removeClazzRestriction(Class<?> clazz)
-	{
-		resctrictedClasses.remove(clazz);
-	}
+    restrictions.put(clazz, restrictedColumns);
+  }
 
-	@Override
-	public void resetRestrictionsOf(Class<?> clazz)
-	{
-		restrictions.remove(clazz);
-	}
+  @Override
+  public void removeClazzRestriction(final Class<?> clazz) {
+    resctrictedClasses.remove(clazz);
+  }
 
-	@Override
-	public void resetRestrictions()
-	{
-		restrictions = new HashMap<>();
-	}
+  @Override
+  public void resetRestrictionsOf(final Class<?> clazz) {
+    restrictions.remove(clazz);
+  }
 
-	@Override
-	public void resetClassRestrictions()
-	{
-		resctrictedClasses = new HashSet<>();
-	}
+  @Override
+  public void resetRestrictions() {
+    restrictions = new HashMap<>();
+  }
 
-	@Override
-	public void resetAll()
-	{
-		resetRestrictions();
-		resetClassRestrictions();
-	}
-	
-	String restrictColumnByObject(Class<?> resquester, Class<?> clazz)
-	{
-		Entity entityRequester = SessionManager.getEntity(resquester);
-		
-		for (ObjectScope entityObject : entityRequester.objects)
-		{
-			if(entityObject.field.getType().equals(clazz))
-			{
-				restrictColumns(resquester, entityObject.label);
-				return entityObject.label;
-			}
-		}
-		
-		return null;
-	}
-	
-	Collection<String> getPermissions(Entity entity)
-	{
-		return getPermissions(entity.getEntityClass());
-	}
+  @Override
+  public void resetClassRestrictions() {
+    resctrictedClasses = new HashSet<>();
+  }
 
-	Collection<String> getPermissions(Class<?> clazz)
-	{
+  @Override
+  public void resetAll() {
+    resetRestrictions();
+    resetClassRestrictions();
+  }
 
-		if (containsRestrictions(clazz))
-		{
+  String restrictColumnByObject(final Class<?> resquester, final Class<?> clazz) {
+    final Entity entityRequester = SessionManager.getEntity(resquester);
 
-			Entity entity = SessionManager.getEntity(clazz);
+    for (final ObjectScope entityObject : entityRequester.objects) {
+      if (entityObject.field.getType().equals(clazz)) {
+        restrictColumns(resquester, entityObject.label);
+        return entityObject.label;
+      }
+    }
 
-			final Collection<String> restrictions = this.restrictions.get(clazz);
-			final Collection<String> permissions = new LinkedHashSet<>();
+    return null;
+  }
 
-			entity.nextSeveralVariables(new EntityListener()
-			{
+  Collection<String> getPermissions(final Entity entity) {
+    return getPermissions(entity.getEntityClass());
+  }
 
-				@Override
-				public void performAction(EntityEvent event)
-				{
+  Collection<String> getPermissions(final Class<?> clazz) {
 
-					if (!restrictions.contains(event.getLabel()))
-					{
-						permissions.add(event.getLabel());
-					}
-				}
-			});
+    if (containsRestrictions(clazz)) {
 
-			return permissions;
-		}
+      final Entity entity = SessionManager.getEntity(clazz);
 
-		return null;
-	}
+      final Collection<String> restrictions = this.restrictions.get(clazz);
+      final Collection<String> permissions = new LinkedHashSet<>();
+
+      entity.nextSeveralVariables(new EntityListener() {
+
+        @Override
+        public void performAction(final EntityEvent event) {
+
+          if (!restrictions.contains(event.getLabel())) {
+            permissions.add(event.getLabel());
+          }
+        }
+      });
+
+      return permissions;
+    }
+
+    return null;
+  }
 }

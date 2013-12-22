@@ -1,16 +1,16 @@
-/* Copyright (C) 2013 Gabriel Giordano
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+/*
+ * Copyright (C) 2013 Gabriel Giordano
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License. */
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package medina.blueprint;
 
 import java.sql.PreparedStatement;
@@ -22,379 +22,271 @@ import java.util.Collection;
 import medina.blueprint.exception.BlueprintException;
 import medina.blueprint.util.StatementBuilder;
 
-abstract class AbstractEngine<E> extends EngineSpecification<E>
-{
-	private final StatementTranslator statementTranslator;
-	final ResultSetTranslator resultSetTranslator;
-	
-	final SessionManager session;
-	
-	final EntityObjectsSettings objectsSettings;
-	final EntityListsSettings listsSettings;
+abstract class AbstractEngine<E> extends EngineSpecification<E> {
+  private final StatementTranslator statementTranslator;
+  final ResultSetTranslator resultSetTranslator;
 
-	private PreparedStatement statement;
-	ResultSet resultSet;
-	
-	private final Collection<Object> placeholderValues;
-	
-	private String sql;
-	private int fetch;
-	
-	// Constructors____________________________________________________________________ //
-	
-	AbstractEngine(SessionManager session)
-	{
-		this.session = session;
+  final SessionManager session;
 
-		objectsSettings = new EntityObjectsSettings();
-		listsSettings = new EntityListsSettings();
+  final EntityObjectsSettings objectsSettings;
+  final EntityListsSettings listsSettings;
 
-		placeholderValues = new ArrayList<>();
-		
-		statementTranslator = new StatementTranslator();
-		resultSetTranslator = new ResultSetTranslator();
-		
-		fetch = 0;
-	}
-	
-	// Package Methods_________________________________________________________________ //
-	
-	final void setStatement(EngineStatementTool builder) 
-	{
-		this.sql = builder.end();
-	}
-	
-	final void runQuery() throws BlueprintException
-	{
-		openStatement();
-		openResultSet();
-	}
-	
-	final void translatePlaceholders() throws BlueprintException
-	{
-		if(placeholderValues.isEmpty())
-		{
-			return;
-		}
-		
-		try
-		{
-			statementTranslator.translate(placeholderValues);
-			placeholderValues.clear();
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
-	
-	final void openStatement() throws BlueprintException
-	{
-		try
-		{
-			statement = session.getStatement(sql);
-			statementTranslator.setStatement(statement);
-			
-			if(fetch > 0)
-			{
-				statement.setFetchSize(fetch);
-			}
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
+  private PreparedStatement statement;
+  ResultSet resultSet;
 
-	final void openResultSet() throws BlueprintException
-	{	
-		try
-		{
-			translatePlaceholders();
-			resultSet = statement.executeQuery();
-			resultSetTranslator.prepare(resultSet, sql);
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
-	
-	final void closeResultSet() throws BlueprintException
-	{
-		try
-		{
-			if (resultSet != null)
-			{
-				resultSet.close();
-				resultSet = null;
-			}	
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
-	
-	// Protected Methods_______________________________________________________________ //
+  private final Collection<Object> placeholderValues;
 
-	@Override
-	protected final void setStatement(String sql) 
-	{
-		this.sql = sql;
-	}
-	
-	@Override
-	protected final void setStatement(StatementBuilder<E> builder) 
-	{
-		this.sql = builder.prepare();
-	}
-	
-	@Override
-	protected final void addPlaceholderValue(Object value)
-	{
-		placeholderValues.add(value);
-	}
-	
-	@Override
-	protected final void addAllPlaceholderValues(Collection<Object> values)
-	{
-		placeholderValues.addAll(values);
-	}
-	
-	@Override
-	protected void resetAllPlaceholderValues()
-	{
-		placeholderValues.clear();
-	}
-	
-	@Override
-	protected final <T> T runCustomAutoIncrementInsert(Class<T> keyType) throws BlueprintException
-	{
-		return runCustomAutoIncrementInsert(keyType, null);
-	}
-	
-	@Override
-	protected final <T> T runCustomAutoIncrementInsert(Class<T> keyType, String[] columns) throws BlueprintException
-	{
-		ResultSet generatedKeys = null;
-		
-		try
-		{
-			statement = session.getAutoGeneratedKeyStatement(sql, columns);
-			statementTranslator.setStatement(statement);
-			
-			translatePlaceholders();
-			
-			final int rowsAffected = statement.executeUpdate();
-			
-			T generatedKey;
-			
-			if (rowsAffected != 0)
-			{
-				generatedKeys = statement.getGeneratedKeys();
-				
-				if (generatedKeys.next())
-				{
-					generatedKey = resultSetTranslator.translateGeneratedKeys
-					(
-						generatedKeys, 
-						keyType
-					);
-					
-					if (generatedKeys.next())
-					{
-						throw new BlueprintException
-						(
-							"An undexpected auto generated key, was found."
-						);
-					}
-				}
-				else
-				{
-					throw new BlueprintException
-					(
-						"No generated key was created."
-					);
-				}
-			}
-			else
-			{
-				throw new BlueprintException
-				(
-					"Insert failed, no rows affected."
-				);
-			}
-			
-			System.err.println
-			(
-				"	The generated key for the insert statement is " 
-				+ generatedKey + " of type " + keyType.getSimpleName() + 
-				"; " + rowsAffected + " rows are affected."
-			);
-			
-			return generatedKey;
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-		finally
-		{
-			try
-			{
-				if(generatedKeys != null)
-				{
-					generatedKeys.close();
-				}
-			}
-			catch(SQLException e)
-			{
-				throw new BlueprintException(e);
-			}
-		}
-	}
-	
-	@Override
-	protected final int runAutoIncrementInsert() throws BlueprintException
-	{
-		return runAutoIncrementInsert(null);
-	}
-	
-	@Override
-	protected final int runAutoIncrementInsert(String[] columns) throws BlueprintException
-	{
-		ResultSet generatedKeys = null;
-		
-		try
-		{
-			statement = session.getAutoGeneratedKeyStatement(sql, columns);
-			statementTranslator.setStatement(statement);
-			
-			translatePlaceholders();
-			
-			final int rowsAffected = statement.executeUpdate();
-			
-			int generatedKey = -1;
-			
-			if (rowsAffected != 0)
-			{
-				generatedKeys = statement.getGeneratedKeys();
-				
-				if (generatedKeys.next())
-				{
-					generatedKey = generatedKeys.getInt(1);
-					
-					if (generatedKeys.next())
-					{
-						throw new BlueprintException
-						(
-							"An undexpected auto generated key, was found."
-						);
-					}
-				}
-				else
-				{
-					throw new BlueprintException
-					(
-						"No generated key was created."
-					);
-				}
-			}
-			else
-			{
-				throw new BlueprintException
-				(
-					"Insert failed, no rows affected."
-				);
-			}
-			
-			System.err.println
-			(
-				"	The generated key for the insert statement is " 
-				+ generatedKey + "; " + rowsAffected +
-				" rows are affected."
-			);
-			
-			return generatedKey;
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-		finally
-		{
-			try
-			{
-				if(generatedKeys != null)
-				{
-					generatedKeys.close();
-				}
-			}
-			catch(SQLException e)
-			{
-				throw new BlueprintException(e);
-			}
-		}
-	}
-	
-	@Override
-	protected final int runUpdate() throws BlueprintException
-	{
-		try
-		{
-			openStatement();
-			translatePlaceholders();
-			return statement.executeUpdate();
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
+  private String sql;
+  private int fetch;
 
-	@Override
-	protected final void initBatch() throws BlueprintException
-	{
-		openStatement();
-	}
+  // Constructors____________________________________________________________________ //
 
-	@Override
-	protected final void addBatch() throws BlueprintException
-	{
-		try
-		{
-			translatePlaceholders();
-			statement.addBatch();
-		} 
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
+  AbstractEngine(final SessionManager session) {
+    this.session = session;
 
-	@Override
-	protected final int[] runBatch() throws BlueprintException
-	{
-		try
-		{
-			return statement.executeBatch();
-		}
-		catch(SQLException e)
-		{
-			throw new BlueprintException(e);
-		}
-	}
-	
-	@Override
-	protected final void setFetchSize(int size)
-	{
-		fetch = size;
-	}
-	
-	@Override
-	public final int getFetchSize() 
-	{
-		return fetch;
-	}
+    objectsSettings = new EntityObjectsSettings();
+    listsSettings = new EntityListsSettings();
+
+    placeholderValues = new ArrayList<>();
+
+    statementTranslator = new StatementTranslator();
+    resultSetTranslator = new ResultSetTranslator();
+
+    fetch = 0;
+  }
+
+  // Package Methods_________________________________________________________________ //
+
+  final void setStatement(final EngineStatementTool builder) {
+    this.sql = builder.end();
+  }
+
+  final void runQuery() throws BlueprintException {
+    openStatement();
+    openResultSet();
+  }
+
+  final void translatePlaceholders() throws BlueprintException {
+    if (placeholderValues.isEmpty()) {
+      return;
+    }
+
+    try {
+      statementTranslator.translate(placeholderValues);
+      placeholderValues.clear();
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  final void openStatement() throws BlueprintException {
+    try {
+      statement = session.getStatement(sql);
+      statementTranslator.setStatement(statement);
+
+      if (fetch > 0) {
+        statement.setFetchSize(fetch);
+      }
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  final void openResultSet() throws BlueprintException {
+    try {
+      translatePlaceholders();
+      resultSet = statement.executeQuery();
+      resultSetTranslator.prepare(resultSet, sql);
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  final void closeResultSet() throws BlueprintException {
+    try {
+      if (resultSet != null) {
+        resultSet.close();
+        resultSet = null;
+      }
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  // Protected Methods_______________________________________________________________ //
+
+  @Override
+  protected final void setStatement(final String sql) {
+    this.sql = sql;
+  }
+
+  @Override
+  protected final void setStatement(final StatementBuilder<E> builder) {
+    this.sql = builder.prepare();
+  }
+
+  @Override
+  protected final void addPlaceholderValue(final Object value) {
+    placeholderValues.add(value);
+  }
+
+  @Override
+  protected final void addAllPlaceholderValues(final Collection<Object> values) {
+    placeholderValues.addAll(values);
+  }
+
+  @Override
+  protected void resetAllPlaceholderValues() {
+    placeholderValues.clear();
+  }
+
+  @Override
+  protected final <T> T runCustomAutoIncrementInsert(final Class<T> keyType) throws BlueprintException {
+    return runCustomAutoIncrementInsert(keyType, null);
+  }
+
+  @Override
+  protected final <T> T runCustomAutoIncrementInsert(final Class<T> keyType, final String[] columns)
+      throws BlueprintException {
+    ResultSet generatedKeys = null;
+
+    try {
+      statement = session.getAutoGeneratedKeyStatement(sql, columns);
+      statementTranslator.setStatement(statement);
+
+      translatePlaceholders();
+
+      final int rowsAffected = statement.executeUpdate();
+
+      T generatedKey;
+
+      if (rowsAffected != 0) {
+        generatedKeys = statement.getGeneratedKeys();
+
+        if (generatedKeys.next()) {
+          generatedKey = resultSetTranslator.translateGeneratedKeys(generatedKeys, keyType);
+
+          if (generatedKeys.next()) {
+            throw new BlueprintException("An undexpected auto generated key, was found.");
+          }
+        } else {
+          throw new BlueprintException("No generated key was created.");
+        }
+      } else {
+        throw new BlueprintException("Insert failed, no rows affected.");
+      }
+
+      System.err.println("	The generated key for the insert statement is " + generatedKey
+          + " of type " + keyType.getSimpleName() + "; " + rowsAffected + " rows are affected.");
+
+      return generatedKey;
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    } finally {
+      try {
+        if (generatedKeys != null) {
+          generatedKeys.close();
+        }
+      } catch (final SQLException e) {
+        throw new BlueprintException(e);
+      }
+    }
+  }
+
+  @Override
+  protected final int runAutoIncrementInsert() throws BlueprintException {
+    return runAutoIncrementInsert(null);
+  }
+
+  @Override
+  protected final int runAutoIncrementInsert(final String[] columns) throws BlueprintException {
+    ResultSet generatedKeys = null;
+
+    try {
+      statement = session.getAutoGeneratedKeyStatement(sql, columns);
+      statementTranslator.setStatement(statement);
+
+      translatePlaceholders();
+
+      final int rowsAffected = statement.executeUpdate();
+
+      int generatedKey = -1;
+
+      if (rowsAffected != 0) {
+        generatedKeys = statement.getGeneratedKeys();
+
+        if (generatedKeys.next()) {
+          generatedKey = generatedKeys.getInt(1);
+
+          if (generatedKeys.next()) {
+            throw new BlueprintException("An undexpected auto generated key, was found.");
+          }
+        } else {
+          throw new BlueprintException("No generated key was created.");
+        }
+      } else {
+        throw new BlueprintException("Insert failed, no rows affected.");
+      }
+
+      System.err.println("	The generated key for the insert statement is " + generatedKey + "; "
+          + rowsAffected + " rows are affected.");
+
+      return generatedKey;
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    } finally {
+      try {
+        if (generatedKeys != null) {
+          generatedKeys.close();
+        }
+      } catch (final SQLException e) {
+        throw new BlueprintException(e);
+      }
+    }
+  }
+
+  @Override
+  protected final int runUpdate() throws BlueprintException {
+    try {
+      openStatement();
+      translatePlaceholders();
+      return statement.executeUpdate();
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  @Override
+  protected final void initBatch() throws BlueprintException {
+    openStatement();
+  }
+
+  @Override
+  protected final void addBatch() throws BlueprintException {
+    try {
+      translatePlaceholders();
+      statement.addBatch();
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  @Override
+  protected final int[] runBatch() throws BlueprintException {
+    try {
+      return statement.executeBatch();
+    } catch (final SQLException e) {
+      throw new BlueprintException(e);
+    }
+  }
+
+  @Override
+  protected final void setFetchSize(final int size) {
+    fetch = size;
+  }
+
+  @Override
+  public final int getFetchSize() {
+    return fetch;
+  }
 }
