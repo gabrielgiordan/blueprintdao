@@ -53,6 +53,10 @@ abstract class EngineSpecification<E>
 	
 	protected abstract int[] runBatch() throws BlueprintException;
 	
+	protected abstract void setFetchSize(int size);
+	
+	public abstract int getFetchSize();
+	
 	// Query Methods___________________________________________________________________ //
 	
 	protected abstract E runSingleRow() throws BlueprintException;
@@ -69,5 +73,4 @@ abstract class EngineSpecification<E>
 	{
 		protected abstract void performAction(ResultSet resultSet, E next) throws BlueprintException, SQLException;
 	}
-
 }

@@ -403,6 +403,7 @@ class Engine<E> extends AbstractEngine<E>
 	{
 		try
 		{
+			setFetchSize(1);
 			runQuery();
 			
 			Object object = null;
@@ -458,6 +459,7 @@ class Engine<E> extends AbstractEngine<E>
 				);
 			}
 			
+			setFetchSize(collection.size());			
 			fillRemaining();
 			
 			@SuppressWarnings("unchecked")
@@ -480,6 +482,7 @@ class Engine<E> extends AbstractEngine<E>
 	{
 		try
 		{
+			setFetchSize(1);
 			runQuery();
 			
 			if (resultSet.next())

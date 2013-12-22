@@ -38,6 +38,7 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 	private final Collection<Object> placeholderValues;
 	
 	private String sql;
+	private int fetch;
 	
 	// Constructors____________________________________________________________________ //
 	
@@ -52,6 +53,8 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 		
 		statementTranslator = new StatementTranslator();
 		resultSetTranslator = new ResultSetTranslator();
+		
+		fetch = 0;
 	}
 	
 	// Package Methods_________________________________________________________________ //
@@ -91,6 +94,11 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 		{
 			statement = session.getStatement(sql);
 			statementTranslator.setStatement(statement);
+			
+			if(fetch > 0)
+			{
+				statement.setFetchSize(fetch);
+			}
 		}
 		catch(SQLException e)
 		{
@@ -351,6 +359,7 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 		openStatement();
 	}
 
+	@Override
 	protected final void addBatch() throws BlueprintException
 	{
 		try
@@ -364,6 +373,7 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 		}
 	}
 
+	@Override
 	protected final int[] runBatch() throws BlueprintException
 	{
 		try
@@ -374,5 +384,17 @@ abstract class AbstractEngine<E> extends EngineSpecification<E>
 		{
 			throw new BlueprintException(e);
 		}
+	}
+	
+	@Override
+	protected final void setFetchSize(int size)
+	{
+		fetch = size;
+	}
+	
+	@Override
+	public final int getFetchSize() 
+	{
+		return fetch;
 	}
 }
