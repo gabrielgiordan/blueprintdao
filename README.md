@@ -25,7 +25,7 @@ public class Film {
 	@EntityID("film_id")
 	private int id;
 	
-	@EntityColumn("title")
+	@EntityColumn //if the column name has the same field name, no value is needed
 	private String title;
 	
 	@EntityObject("language_id")
