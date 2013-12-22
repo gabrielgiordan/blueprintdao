@@ -40,6 +40,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface EntityID {
 	
-	String value();
+	String value() default "";
 	
 }

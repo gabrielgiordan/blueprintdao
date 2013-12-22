@@ -282,6 +282,11 @@ public abstract class AbstractEntity implements EntitySpecification
 		{
 			label = clazz.getAnnotation(EntityID.class).value();
 
+			if(label.isEmpty())
+			{
+				label = field.getName();
+			}
+			
 			Class<?> superClazz = EngineUtil.getLastSuperClass(clazz);
 
 			field = EngineUtil.searchIdentity(superClazz);
@@ -316,6 +321,12 @@ public abstract class AbstractEntity implements EntitySpecification
 		{
 			super(field);
 			label = field.getAnnotation(EntityColumn.class).value();
+			
+			if(label.isEmpty())
+			{
+				label = field.getName();
+			}
+			
 			genericType = EngineUtil.searchGenericType(field);
 		}
 
@@ -339,6 +350,12 @@ public abstract class AbstractEntity implements EntitySpecification
 		{
 			super(field);
 			label = field.getAnnotation(EntityObject.class).value();
+			
+			if(label.isEmpty())
+			{
+				label = field.getName();
+			}
+			
 			identity = EngineUtil
 					.searchIdentity(EngineUtil.getLastSuperClass(this.field.getType()));
 		}
