@@ -216,11 +216,12 @@ Country: United States - HashCode: 581840912 - City: Philadelphia
 The <tt>world</tt> database can be downloaded at the official <a href="http://dev.mysql.com/doc/world-setup/en/index.html"><b>MySQL</b></a> site.</p>
 
 <h4>Restricting the Engine</h4>
-<p>Restrictions can also be added to the <tt>country</tt> entity when making a <tt>city</tt> query. If some columns or objects aren't needed, you can set a restriction on a DAO class:</p>
-<pre>
-EntityObjectsSettings settings = cityDao.getObjectsSettings();
-settings.restrictColumns(Country.class, "Continent", "LocalName");
-</pre>
+<p>Restrictions can also be added to the <tt>country</tt> entity when making a <tt>city</tt> query. If some columns or objects aren't needed, you can get the restrictions configuration of concerning the DAO class:</p>
+
+<tt>EntityObjectsSettings settings = cityDao.getObjectsSettings();</tt>
+
+<p>And set restrictions to columns:</p>
+<tt>settings.restrictColumns(Country.class, "Continent", "LocalName");</tt>
 
 <p>If preferred, fields can be restricted instead of columns:</p>
 <tt>settings.restrictFields(Country.class, "continent", "localName");</tt>
@@ -233,7 +234,7 @@ settings.restrictColumns(Country.class, "Continent", "LocalName");
 <tt>settings.setFillObjects(false);</tt>
 
 <p>So, when writing a query, you don't need to use joins to return columns, but to perform searches. 
-When writing an join, be aware to select only the current table columns, so the query will be faster.</p>
+When writing a join, be aware to select only the current table columns, so the query will be faster.</p>
 
 <h2>Supported Types</h2>
 <p>Moreover, the <b>BlueprintDao</b> supports all the common types, like <tt><b><i>java.lang</i></b></tt> types and the <tt><b><i>java.sql</i></b></tt> types. Below is an list of the supported types:</p>
