@@ -1,9 +1,8 @@
 BlueprintDao
 ============
+<h2>A Brief Introduction</h2>
 <p>The <b>BlueprintDao</b> is a light-weight <b>JDBC</b> convenience layer. All that can be done in <b>JDBC</b>
 can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements or for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.</p>
-
-<h2>A Brief Introduction</h2>
 
 <h4>Mapping entities with annotations:</h4>
 <p>The <b>BlueprintDao</b> framework recognizes a table by the value
@@ -63,7 +62,7 @@ public class Customer extends Person {
 </pre>
 
 <h2>The Blueprint</h2>
-<p>All the DAO classes should extend the <tt><b><i>Blueprint</i></b></tt> abstract class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:</p>
+<p>All DAO classes should extend the <tt><b><i>Blueprint</i></b></tt> class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:</p>
 
 <pre>
 public class CountryDao extends Blueprint&lt;Country&gt; {
@@ -143,7 +142,6 @@ personDao.useIncrement(true);
 </tt></p>
 <p>When a sequence or an increment is used, the <tt>personDao.save(person)</tt> method will generate and set the identity to the <tt>Person</tt> instance passed as parameter.</p>
 
-======================
 <h2>The Session</h2>
 <p>A session is created for an more efficient management of the created daos, all of them will use the same connection and will share <tt>PrepareStatement</tt> mappings. A <tt>PreparedStatement</tt> is never created twice in a session. The <tt>SessionManager</tt> superclass will also control all the created entities and <tt>ResultSet</tt> mapped columns.</p>
 
@@ -184,7 +182,59 @@ try {
 }
 </pre>
 
-========================
+<h2>The Engine</h2>
+<p>The <tt><b><i>Engine</i></b></tt> class has a different way to execute queries than other frameworks, all DAO classes will make use of it. First, when a query is performed, the engine fill the identity and columns fields of instantiated objects while associating all the foreign keys to the instantiated object. When it's done, a subsequent query is performed automatically, only with the non-repeated foreign keys and the respective objects are filled with the foreign objects.</p>
+<p>For example, the table <tt>city</tt> has a foreign key that identifies a <tt>country</tt>, so if you run a <tt>SELECT * FROM city</tt> query, the <tt><b><i>Engine</i></b></tt> will perform a subsequent <tt>SELECT * FROM country WHERE Code = ?</tt> query, but never repeating a value.</p>
+<p>This can be verified printing all hash codes of <tt>Country</tt> objects of the resulted query.</p>
+<p></p>
+<pre>
+for (City city : cityDao.list()) {
+	System.out.println
+	(
+		"Country: " + city.getCountry().getName() + " - " + 
+		"HashCode: " + city.getCountry().hashCode() + " - " +
+		"City: " + city.getName()
+	);
+}
+</pre>
+<p>The output will be: </p>
+<pre>
+Country: Vietnam - HashCode: 146419630 - City: Vinh
+Country: Vietnam - HashCode: 146419630 - City: My Tho
+Country: Vietnam - HashCode: 146419630 - City: Da Lat
+Country: Vietnam - HashCode: 146419630 - City: Buon Ma Thuot
+Country: Estonia - HashCode: 2005945595 - City: Tallinn
+Country: Estonia - HashCode: 2005945595 - City: Tartu
+Country: United States - HashCode: 581840912 - City: New York
+Country: United States - HashCode: 581840912 - City: Los Angeles
+Country: United States - HashCode: 581840912 - City: Chicago
+Country: United States - HashCode: 581840912 - City: Houston
+Country: United States - HashCode: 581840912 - City: Philadelphia
+...
+</pre>
+<p>In this example, a query of 4079 cities with their respective countries, took 2.1 seconds to be done without restrictions using <b>MySQL</b>. <br/>
+The <tt>world</tt> database can be downloaded on the official <a href="http://dev.mysql.com/doc/world-setup/en/index.html"><b>MySQL</b></a> site.</p>
+
+<h4>Restricting the Engine</h4>
+<p>Restrictions can also be added to the <tt>country</tt> entity when making a <tt>city</tt> query. If some columns or objects aren't needed, you can set a restriction on a DAO class:</p>
+<pre>
+EntityObjectsSettings settings = cityDao.getObjectsSettings();
+settings.restrictColumns(Country.class, "Continent", "LocalName");
+</pre>
+
+<p>If preferred, a field can be restricted instead of a column:</p>
+<tt>settings.restrictFields(Country.class, "continent", "localName");</tt>
+
+<p>The <tt><b><i>Country</i></b></tt> class can also be entirely restricted:</p>
+<tt>settings.restrictClass(Country.class);</tt>
+
+<p>Or all objects and its sub objects can be restricted:</p>
+<tt>settings.setFillSubObjects(false);</tt><br/>
+<tt>settings.setFillObjects(false);</tt>
+
+<p>So, when writing a query, you don't need to use joins to return columns, but to perform searches. 
+When writing an join, be aware to select only the current table columns, so the query will be faster.</p>
+
 <h2>Supported Types</h2>
 <p>Moreover, the <b>BlueprintDao</b> supports all the common types, like <tt><b><i>java.lang</i></b></tt> types and the <tt><b><i>java.sql</i></b></tt> types. Below is an list of the supported types:</p>
 
@@ -213,4 +263,4 @@ try {
 The <b>BlueprintDao</b> is still in progress, so I do not guarantee anything.<br/>
 Any grammar errors, contact me. My native language is Portuguese.<br/>
 Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
-<p>Greetings from Brazil! :]</p>
+<p>Greetings from Brazil!</p>
