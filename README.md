@@ -129,7 +129,7 @@ for(Person person : personDao.list()) {
 }
 session.end();
 </pre>
-<p>This class also supports String identities or whatever numberic types supported by the framework:
+<p>This class also supports String identities or whatever numeric types supported by the framework:
 <br/><tt>
 Country country = countryDao.search("USA");
 </tt></p>
