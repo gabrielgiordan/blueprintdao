@@ -35,12 +35,14 @@ class StatementTranslator {
     int index = 1;
 
     for (final Object value : values) {
+      
       if (value instanceof String) {
         statement.setString(index++, (String) value);
         continue;
       }
 
       if (value instanceof Number) {
+        
         if (value instanceof Long) {
           statement.setLong(index++, (long) value);
           continue;
@@ -80,12 +82,12 @@ class StatementTranslator {
             + " is not supported.");
       }
 
-      if (EnumType.class.isAssignableFrom(value.getClass())) {
+      if (value instanceof EnumType) {
         statement.setString(index++, translateEnumType(value));
         continue;
       }
 
-      if (value.getClass().equals(SetType.class)) {
+      if (value instanceof SetType) {
         statement.setString(index++, translateSetType(value));
         continue;
       }

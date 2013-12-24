@@ -44,68 +44,71 @@ class ResultSetTranslator {
 
   private Object translatePrimaryType(final Class<?> fieldType, final int index)
       throws SQLException {
+    
     if (fieldType.isPrimitive()) {
-      if (fieldType.equals(Long.TYPE)) {
+      
+      if (fieldType == long.class) {
         return resultSet.getLong(index);
       }
 
-      if (fieldType.equals(Integer.TYPE)) {
+      if (fieldType == int.class) {
         return resultSet.getInt(index);
       }
 
-      if (fieldType.equals(Double.TYPE)) {
+      if (fieldType == double.class) {
         return resultSet.getDouble(index);
       }
 
-      if (fieldType.equals(Float.TYPE)) {
+      if (fieldType == float.class) {
         return resultSet.getFloat(index);
       }
 
-      if (fieldType.equals(Short.TYPE)) {
+      if (fieldType == short.class) {
         return resultSet.getShort(index);
       }
 
-      if (fieldType.equals(Byte.TYPE)) {
+      if (fieldType == byte.class) {
         return resultSet.getByte(index);
       }
 
-      if (fieldType.equals(Boolean.TYPE)) {
+      if (fieldType == boolean.class) {
         return resultSet.getBoolean(index);
       }
 
       throw new BlueprintException("Primitive type " + fieldType + " not supported.");
     }
 
-    if (fieldType.equals(String.class)) {
+    if (fieldType == String.class) {
       return resultSet.getString(index);
     }
 
     if (Number.class.isAssignableFrom(fieldType)) {
-      if (fieldType.equals(Long.class)) {
+      
+      if (fieldType == Long.class) {
         return resultSet.getLong(index);
       }
 
-      if (fieldType.equals(Integer.class)) {
+      if (fieldType == Integer.class) {
         return resultSet.getInt(index);
       }
 
-      if (fieldType.equals(Double.class)) {
+      if (fieldType == Double.class) {
         return resultSet.getDouble(index);
       }
 
-      if (fieldType.equals(Float.class)) {
+      if (fieldType == Float.class) {
         return resultSet.getFloat(index);
       }
 
-      if (fieldType.equals(Short.class)) {
+      if (fieldType == Short.class) {
         return resultSet.getShort(index);
       }
 
-      if (fieldType.equals(Byte.class)) {
+      if (fieldType == Byte.class) {
         return resultSet.getByte(index);
       }
 
-      if (fieldType.equals(BigDecimal.class)) {
+      if (fieldType == BigDecimal.class) {
         return resultSet.getBigDecimal(index);
       }
 
@@ -116,53 +119,56 @@ class ResultSetTranslator {
   }
 
   private Object translateOtherType(final Class<?> type, final int index) throws SQLException {
+    
     final String packageName = type.getPackage().getName();
 
     if (packageName.equals("java.util")) {
-      if (type.equals(java.util.Date.class)) {
+      
+      if (type == java.util.Date.class) {
         return resultSet.getDate(index);
       }
     }
 
     if (packageName.equals("java.sql")) {
-      if (type.equals(java.sql.Date.class)) {
+      
+      if (type == java.sql.Date.class) {
         return resultSet.getDate(index);
       }
 
-      if (type.equals(java.sql.Blob.class)) {
+      if (type == java.sql.Blob.class) {
         return resultSet.getBlob(index);
       }
 
-      if (type.equals(java.sql.Clob.class)) {
+      if (type == java.sql.Clob.class) {
         return resultSet.getClob(index);
       }
 
-      if (type.equals(java.sql.NClob.class)) {
+      if (type == java.sql.NClob.class) {
         return resultSet.getNClob(index);
       }
 
-      if (type.equals(java.sql.Ref.class)) {
+      if (type == java.sql.Ref.class) {
         return resultSet.getRef(index);
       }
 
-      if (type.equals(java.sql.RowId.class)) {
+      if (type == java.sql.RowId.class) {
         return resultSet.getRowId(index);
       }
 
-      if (type.equals(java.sql.SQLXML.class)) {
+      if (type == java.sql.SQLXML.class) {
         return resultSet.getSQLXML(index);
       }
 
-      if (type.equals(java.sql.Time.class)) {
+      if (type == java.sql.Time.class) {
         return resultSet.getTime(index);
       }
 
-      if (type.equals(java.sql.Timestamp.class)) {
+      if (type == java.sql.Timestamp.class) {
         return resultSet.getTimestamp(index);
       }
     }
 
-    if (type.equals(java.net.URL.class)) {
+    if (type == java.net.URL.class) {
       return resultSet.getURL(index);
     }
 
@@ -217,7 +223,7 @@ class ResultSetTranslator {
       return;
     }
 
-    if (type.equals(SetType.class)) {
+    if (type == SetType.class) {
       variable.field.set(object,
           translateSetType(resultSet.getString(index), ((ColumnScope) variable).genericType));
       return;
