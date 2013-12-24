@@ -14,9 +14,26 @@ import medina.blueprint.session.Transaction;
 public final class Session extends SessionManager {
 
   private final Transaction transaction;
-
+  private boolean isClosed;
+  
   // Constructors____________________________________________________________________ //
 
+  {
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+
+      @Override
+      public void run() {
+        super.run();
+
+        if(!isClosed) {
+          System.err.println("\n    Ending unclosed session.");
+          end();
+        }
+      }
+
+    });
+  }
+  
   public Session(final Connection connection) {
     super(connection);
     this.transaction = new SessionTransaction();
@@ -47,6 +64,7 @@ public final class Session extends SessionManager {
     } finally {
       try {
         connection.close();
+        isClosed = true;
       } catch (final SQLException e) {
         throw new BlueprintException(e);
       } finally {
