@@ -1,27 +1,26 @@
 BlueprintDao
 ============
-#A Brief Introduction
-The **BlueprintDao** is a light-weight **JDBC** convenience layer. All that can be done in **JDBC**
-can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements or for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.
+#Uma Breve Introdução
+**BlueprintDao** é uma leve camada **JDBC**. Tudo que pode ser feito em **JDBC**, pode ser feito nele. Tem como meta, substituir todo código repetitivo do **JDBC**, como setar parâmetros para o **PreparedStatement** ou para o **ResultSet**; Além disso, disponibiliza utilitários para construir sua **SQL**, acessar os valores das instâncias das entidades, fazer transações e assim por diante.
 
-###Mapping entities with annotations:
-The **BlueprintDao** framework recognizes a table by the value
-annotated on an `@EntityTable` annotation.
+###Mapeando entidades com anotações:
+A **BlueprintDao** framework reconhece uma tabela pelo valor anotado na  anotação `@EntityTable`.
 
-An identity is marked by an `@EntityID` annotation;
-Columns with `@EntityColumn` annotations; 
-Foreigners with `@EntityObject` annotations; 
-and other tables with `@EntityList` annotations without parameters.
+Uma identidade é marcada pela anotação `@EntityID`;
+Colunas com a `@EntityColumn`; 
+Chaves Estrangeiras com `@EntityObject`; 
+e outras tabelas com associação com a `@EntityList`.
 
-Below is an example of a bean class using the **BlueprintDao** framework:
+Segue abaixo um exemplo de uma classe bean utilizando a **BlueprintDao**:
 ```java
 @EntityTable("film")
-public class Film {
+public class Filme {
 
 	@EntityID("film_id")
 	private int id;
-	
-	@EntityColumn //if the column name has the same field name, no value is needed
+
+	//se o nome da coluna é o mesmo da variável, o valor passado na anotação é desnecessário.
+	@EntityColumn 
 	private String title;
 	
 	@EntityObject("language_id")
@@ -31,22 +30,22 @@ public class Film {
 	private Language originalLanguage;
 	
 	@EntityColumn("special_features")
-	private SetType<SpecialFeatures> specialFeatures; // MySQL enum set type
+	private SetType<SpecialFeatures> specialFeatures; // tipo set do MySQL
 	
 	@EntityList
 	private List<FilmActor> actors;
 ```
-The `special_features` column contains the following **MySQL** set type:
+A coluna `special_features` contém a seguinte set do **MySQL**:
 
 `set('Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes')`
 
-In Java, the `SpecialFeatures` is an enum that implements the `EnumType` interface to became detectable on futures queries and updates. If you run a query on the example above, a determined `SetType` will be filled with the respective enums values: 
+No Java, o `SpecialFeatures` é um enumerator que implementa a interface `EnumType` para se tornar detectável em futuras consultas e alterações no banco de dados. Se uma consulta for rodada no exemplo acima, um `SetType` de um determinado objeto será preenchido com os valores:
 
 `[TRAILERS, DELETED_SCENES, COMMENTARIES]`
 
-###Mapping inherited entities with annotations:
+###Mapeando entidades herdadas com anotações
 
-When an entity is inherited, the `@EntityID` is annotated above the class.
+Quando uma entidade é herdada, o `@EntityID` é anotado acima da classe.
 ```java
 @EntityTable("customer")
 @EntityID("customer_id")
@@ -56,9 +55,10 @@ public class Customer extends Person {
 	private String company;
 ```
 
-#The Blueprint
+#A classe Blueprint
 
-All DAO classes should extend the **_`Blueprint`_** class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:
+Todas as classes DAO devem herdar a classe **_`Blueprint`_**. Essa classe contém métodos utilitários com o modificador de acesso `protected` para a construção de uma classe DAO. Abaixo um exemplo de uma classe DAO customizada:
+
 ```java
 public class CountryDao extends Blueprint<Country> {
 
@@ -77,9 +77,10 @@ public class CountryDao extends Blueprint<Country> {
 }
 ```
 
-###The ResultSetListener
+###O ResultSetListener
 
-Suppose you want to do whatever you want with each Country row in a query, so the **ResultSetListener** was created for this purpose. It returns the ResultSet and the Country on each row iteration. For example, suppose you have a non-mapped column and want to obtain it:
+Suponha que você queira fazer qualquer coisa a cada linha retornada em uma consulta; o **ResultSetListener** foi criado com este propósito. Ele retorna o ResultSet e o Objeto a cada iteração de linha. Por exemplo, suponha que você tem uma coluna não anotada e deseja obtê-la:
+
 ```java
 public List<CountryRank> getLifeExpectancyRank(int rankSize) {
 		
@@ -111,59 +112,60 @@ public List<CountryRank> getLifeExpectancyRank(int rankSize) {
 }
 ```
 
-#The BlueprintDao
+#A classe BlueprintDao
 
-The **_`BlueprintDao`_** class extends the **_`Blueprint`_** abstract class, so you can also use it to build your data access object class. The **_`BlueprintDao`_** is a prepared DAO, that contains all the **CRUD** methods of a common DAO class.
+A classe **_`BlueprintDao`_** herda a classe abstrata **_`Blueprint`_**, 
+então ela também pode ser utilizada para construir sua DAO. **_`BlueprintDao`_** é uma DAO já preparada que contém todos os métodos **CRUD** de uma DAO comum.
 
-To use it without extend is pretty simple:
+Para usa-la é simples:
 ```java
 BlueprintDao<Person> personDao = new BlueprintDao<Person>(session) {};
 
 session.begin();
 for(Person person : personDao.list()) {
-	//do something
+	//fazer algo
 }
 session.end();
 ```
 
-This class also supports String identities or whatever numeric types supported by the framework:
+Essa classe suporta ID do tipo ´String´ ou qualquer valor numérico suportado pela framework:
 ```java 
 Country country = countryDao.search("USA");
 ```
 
-If you're working with **Oracle** databases, you can set the sequence that can be used inside a transaction scope:
+Se você usa **Oracle**, uma sequência pode ser setada e utilizada dentro de um escopo de transação:
 ```java
 personDao.useSequence("sq_person");
 ```
 
-In other databases like **MySQL** you just request an auto-increment use:
+Em outros bancos de dados, como **MySQL**, você apenas solicita o uso de um auto incremento:
 ```java
 personDao.useIncrement(true);
 ```
 
-When a sequence or an increment is used, the `personDao.save(person)` method will generate and set the identity to the `Person` instance passed as parameter.
+Quando uma sequência ou um auto incremento é usado, o método `personDao.save(person)` irá gerar e automaticamente setar o ID para a instância do objeto.
 
-#The Session
+#A classe Session
 
-A session is created for an more efficient management of the created daos, all of them will use the same connection and will share `PrepareStatement` mappings. A `PreparedStatement` is never created twice in a session. The `SessionManager` superclass will also control all the created entities and `ResultSet` mapped columns.
+Uma sessão é criada para um controle mais eficiente dos DAOs criados, todos eles, irão usar a mesma conexão e irão compartilhar mapeamentos de objetos da classe `PreparedStatement`. Um `PreparedStatement` nunca é instanciado duas vezes em uma sessão. A superclasse  `SessionManager` também irá controlar todas as entidades criadas e as colunas mapeadas do `ResultSet`.
 
-When a session is ended, all the created `PreparedStatement` instances are closed, as the `Connection` passed as parameter. So a session should be created in manner that all the queries and transactions uses it.
+Quando uma sessão é finalizada, todos as instâncias do `PreparedStatement` são fechadas, assim como a `Connection` passada como parâmetro. Então, uma sessão deve ser criada de maneira que todas as consultas e transações a usem.
 
-Below is a simple example of beginning and ending a session:
+Segue abaixo um simples exemplo para começar e terminar uma sessão:
 ```java
-ConnectionFactory factory = new ConnectionFactory(); //your connection factory
+ConnectionFactory factory = new ConnectionFactory(); //sua classe connection factory
 Session session = new Session(factory.getConnection());
 
 session.begin();
-//queries and transactions here
+//consultas e transações aqui
 session.end();
 ```
 
-###Starting a Transaction:
+###Começando uma Transação:
 
-Inside of a session scope, transactions are performed.
+Dentro de um escopo de sessão, transações são efetuadas.
 
-Below is an example of a simple transaction.
+Abaixo um exemplo de uma simples transação:
 ```java
 try {
 	Transaction transaction = session.transaction();
@@ -172,7 +174,7 @@ try {
 	Person person = new Person();
 	person.setName("xxxx xxxxxx");
 	personDao.useSequence("sq_person")
-	personDao.save(person); //generate and fill the id
+	personDao.save(person); //gera e preenche o ID
 	
 	Customer customer = new Customer();
 	customer.setId(person.getId());
@@ -185,13 +187,13 @@ try {
 }
 ```
 
-#The Engine
+#A Engine
 
-The **_`Engine`_** class has a different way to execute queries than other frameworks, all DAO classes will make use of it. When a query is performed, the engine fill the identity and columns fields of instantiated objects while associating the foreign key to the instantiated object. When it's done, a subsequent query is performed automatically, with only the non-repeated foreign keys and their respective objects are filled with the foreign objects.
+A classe **_`Engine`_** possui uma maneira diferente de executar consultas do que outras frameworks, todas as classes DAO, irão fazer uso dela. Quando uma consulta é executada, a engine irá preencher as variáveis do ID e das colunas dos objetos instanciados, enquanto irá associar a chave estrangeira ao objeto instanciado. Quando terminada, uma subsequente consulta é executada automaticamente, com apenas as chaves estrangeiras de valores não repetidos e seus respectivos objetos, com seus objetos estrangeiros.
 
-For example, the table `city` has a foreign key that identifies a `country`, so if you run a `SELECT * FROM city` query, the **_`Engine`_** will perform a subsequent `SELECT * FROM country WHERE Code = ?` query, but never repeating a parameter value.
+Por exemplo, a tabela `city` possui uma chave estrangeira que identifica um `country`, então se você executar uma consulta `SELECT * FROM city`, a classe **_`Engine`_** irá executar uma subsequente consulta `SELECT * FROM country WHERE Code = ?`, porém, nunca repetindo o valor do parâmetro.
 
-This can be verified printing all hash codes of `Country` objects of the resulted query.
+Isso pode ser verificado pelos hash codes dos objetos `Country` da resultante consulta:
 ```java
 for (City city : cityDao.list()) {
 	System.out.println
@@ -202,7 +204,7 @@ for (City city : cityDao.list()) {
 	);
 }
 ```
-The output will be: 
+O output será: 
 ```
 Country: Vietnam - HashCode: 146419630 - City: Vinh
 Country: Vietnam - HashCode: 146419630 - City: My Tho
@@ -216,34 +218,33 @@ Country: United States - HashCode: 581840912 - City: Chicago
 Country: United States - HashCode: 581840912 - City: Houston
 Country: United States - HashCode: 581840912 - City: Philadelphia
 ```
-In this example, a query of 4079 cities with their respective countries, took 781ms to be done without restrictions using **MySQL**. If the same query is repeated several times again, the time decreases to half.
+Neste exemplo, uma consulta de 4079 cidades com seus respectivos países, levou 781ms para ser realizado, sem restrições, utilizando **MySQL**. Se a mesma consulta é repetida diversas vezes, o tempo desce para metade. Note que este valor pode variar por diversos motivos.
 
-The `world` database can be downloaded at the official [MySQL] (http://dev.mysql.com/doc/world-setup/en/index.html) site.
+A base de dados `world` pode ser baixada no site oficial do [MySQL] (http://dev.mysql.com/doc/world-setup/en/index.html).
 
-####Restricting the Engine
-
-Restrictions can also be added to the `country` entity when making a `city` query. If some columns or objects aren't needed, you can get the restrictions configuration of the concerning DAO class:
+####Restringindo a Engine
+Restrições também podem ser adicionadas para a entidade `country` quando executada uma consulta com a entidade `city`. Se algumas colunas ou objetos não são necessários, você pode obter a configuração da classe DAO:
 
 ```java
 EntityObjectsSettings settings = cityDao.getObjectsSettings();
 ```
 
-And set restrictions to columns:
+E adicionar restrições para as colunas:
 ```java
 settings.restrictColumns(Country.class, "Continent", "LocalName");
 ```
 
-If preferred, fields can be restricted instead of columns:
+Caso seja preferido, variáveis também podem ser restritas ao invés de colunas:
 ```java
 settings.restrictFields(Country.class, "continent", "localName");
 ```
 
-The **_`Country`_** class can also be entirely restricted:
+A classe **_`Country`_** também pode ser restringida totalmente:
 ```java
 settings.restrictClass(Country.class);
 ```
 
-Or all objects and its sub objects can be restricted:
+Ou todos os objetos e seus sub objetos podem ser restringidos:
 ```java
 settings.setFillSubObjects(false);
 ```
@@ -251,16 +252,16 @@ settings.setFillSubObjects(false);
 settings.setFillObjects(false);
 ```
 
-So, when writing a query, you don't need to use joins to return columns, but to perform searches. 
-When writing a join, be aware to select only the current table columns, so the query will be faster.
+Então, quando escrevendo uma consulta, você não precisa utilizar joins para retornar colunas, mas sim, para realizar buscas.
+Quando escrevendo um join, esteja atento de selecionar apenas as colunas da tabela atual, assim a busca será mais rápida.
 
-A second **_`Engine`_** alternative will be writed in future releases.
+Uma segunda alternativa à classe **_`Engine`_**  será escrita em futuras versões.
 
-##Supported Types
+##Tipos Suportados
 
-Moreover, the **BlueprintDao** supports all the common types, like **_`java.lang`_** types and the **_`java.sql`_** types. 
+A **BlueprintDao** suporta todos os tipos comuns, como os contidos no pacote **_`java.lang`_** e no **_`java.sql`_**. 
 
-Below is an list of the supported types:
+Abaixo uma lista dos tipos suportados:
 
 | **_`java.lang`_**	| **_`java.math`_** | **_`java.util`_** | **_`java.sql`_**  | **_`java.net`_** | **_`blueprint.type`_** |
 | :-------------------: |:-------------:|:---------:|:---------:|:--------:|:--------------:|
@@ -274,10 +275,6 @@ Below is an list of the supported types:
 | String 		|		|           | Time	|          |		    |
 | enum 			|		|           | Timestamp |          |		    |
 
-#Finally
+#Por Fim
 
-The **BlueprintDao** is still in progress, so I cannot guarantee anything.
-Any grammar errors, contact me. My native language is Portuguese.
-Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
-
-Greetings from Brazil!
+A **BlueprintDao** ainda é um trabalho em progresso, nada pode ser garantido por enquanto. Qualquer sugestões, suporte e pedidos de colaboração, eu estarei agradecido em atender.
