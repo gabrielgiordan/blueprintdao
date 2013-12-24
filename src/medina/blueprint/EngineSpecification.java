@@ -32,6 +32,8 @@ abstract class EngineSpecification<E> {
 
   protected abstract void addPlaceholderValue(Object value);
 
+  protected abstract void addPlaceholderValues(Object... values);
+
   protected abstract void addAllPlaceholderValues(Collection<Object> values);
 
   protected abstract void resetAllPlaceholderValues();
@@ -63,6 +65,8 @@ abstract class EngineSpecification<E> {
   protected abstract List<E> runSeveralRows() throws BlueprintException;
 
   protected abstract void nextSingleRow(ResultSetListener listener) throws BlueprintException;
+  
+  protected abstract <T> T nextSingleRow(ResultSetTypeListener<T> listener) throws BlueprintException;
 
   protected abstract void nextSeveralRows(ResultSetListener listener) throws BlueprintException;
 
@@ -71,5 +75,21 @@ abstract class EngineSpecification<E> {
   protected abstract class ResultSetListener {
     protected abstract void performAction(ResultSet resultSet, E next) throws BlueprintException,
         SQLException;
+  }
+  
+  protected abstract class ResultSetTypeListener<T> {
+    
+    private T type;
+    
+    protected abstract void performAction(ResultSet resultSet, E next) throws BlueprintException,
+        SQLException;
+    
+    protected T getReturn() {
+      return type;
+    }
+    
+    protected void setReturn(T type) {
+      this.type = type;
+    }
   }
 }
