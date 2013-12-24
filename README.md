@@ -37,11 +37,15 @@ public class Film {
 	private List<FilmActor> actors;
 ```
 The `special_features` column contains the following **MySQL** set type:
+
 `set('Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes')`
-In Java, the `SpecialFeatures` is an enum that implements the `EnumType` 
-interface to became detectable on futures queries and updates. If you run a query on
-the example above, a determined `SetType` will be filled with the respective enums values: `[TRAILERS, DELETED_SCENES, COMMENTARIES]`
+
+In Java, the `SpecialFeatures` is an enum that implements the `EnumType` interface to became detectable on futures queries and updates. If you run a query on the example above, a determined `SetType` will be filled with the respective enums values: 
+
+`[TRAILERS, DELETED_SCENES, COMMENTARIES]`
+
 ###Mapping inherited entities with annotations:
+
 When an entity is inherited, the `@EntityID` is annotated above the class.
 ```java
 @EntityTable("customer")
@@ -51,7 +55,9 @@ public class Customer extends Person {
 	@EntityColumn
 	private String company;
 ```
+
 #The Blueprint
+
 All DAO classes should extend the **_`Blueprint`_** class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:
 ```java
 public class CountryDao extends Blueprint<Country> {
@@ -70,7 +76,9 @@ public class CountryDao extends Blueprint<Country> {
 	}
 }
 ```
+
 ###The ResultSetListener
+
 Suppose you want to do whatever you want with each Country row in a query, so the **ResultSetListener** was created for this purpose. It returns the ResultSet and the Country on each row iteration. For example, suppose you have a non-mapped column and want to obtain it:
 ```java
 public List<CountryRank> getLifeExpectancyRank(int rankSize) {
@@ -102,8 +110,11 @@ public List<CountryRank> getLifeExpectancyRank(int rankSize) {
 	return ranking;
 }
 ```
+
 #The BlueprintDao
+
 The **_`BlueprintDao`_** class extends the **_`Blueprint`_** abstract class, so you can also use it to build your data access object class. The **_`BlueprintDao`_** is a prepared DAO, that contains all the **CRUD** methods of a common DAO class.
+
 To use it without extend is pretty simple:
 ```java
 BlueprintDao<Person> personDao = new BlueprintDao<Person>(session) {};
@@ -114,6 +125,7 @@ for(Person person : personDao.list()) {
 }
 session.end();
 ```
+
 This class also supports String identities or whatever numeric types supported by the framework:
 ```java 
 Country country = countryDao.search("USA");
@@ -128,9 +140,11 @@ In other databases like **MySQL** you just request an auto-increment use:
 ```java
 personDao.useIncrement(true);
 ```
+
 When a sequence or an increment is used, the `personDao.save(person)` method will generate and set the identity to the `Person` instance passed as parameter.
 
 #The Session
+
 A session is created for an more efficient management of the created daos, all of them will use the same connection and will share `PrepareStatement` mappings. A `PreparedStatement` is never created twice in a session. The `SessionManager` superclass will also control all the created entities and `ResultSet` mapped columns.
 
 When a session is ended, all the created `PreparedStatement` instances are closed, as the `Connection` passed as parameter. So a session should be created in manner that all the queries and transactions uses it.
@@ -144,8 +158,11 @@ session.begin();
 //queries and transactions here
 session.end();
 ```
+
 ###Starting a Transaction:
+
 Inside of a session scope, transactions are performed.
+
 Below is an example of a simple transaction.
 ```java
 try {
@@ -167,7 +184,9 @@ try {
 	transaction.rollback();
 }
 ```
+
 #The Engine
+
 The **_`Engine`_** class has a different way to execute queries than other frameworks, all DAO classes will make use of it. When a query is performed, the engine fill the identity and columns fields of instantiated objects while associating the foreign key to the instantiated object. When it's done, a subsequent query is performed automatically, with only the non-repeated foreign keys and their respective objects are filled with the foreign objects.
 
 For example, the table `city` has a foreign key that identifies a `country`, so if you run a `SELECT * FROM city` query, the **_`Engine`_** will perform a subsequent `SELECT * FROM country WHERE Code = ?` query, but never repeating a parameter value.
@@ -202,6 +221,7 @@ In this example, a query of 4079 cities with their respective countries, took 78
 The `world` database can be downloaded at the official [MySQL] (http://dev.mysql.com/doc/world-setup/en/index.html) site.
 
 ####Restricting the Engine
+
 Restrictions can also be added to the `country` entity when making a `city` query. If some columns or objects aren't needed, you can get the restrictions configuration of the concerning DAO class:
 
 ```java
@@ -237,7 +257,9 @@ When writing a join, be aware to select only the current table columns, so the q
 A second **_`Engine`_** alternative will be writed in future releases.
 
 ##Supported Types
+
 Moreover, the **BlueprintDao** supports all the common types, like **_`java.lang`_** types and the **_`java.sql`_** types. 
+
 Below is an list of the supported types:
 
 | **_`java.lang`_**	| **_`java.math`_** | **_`java.util`_** | **_`java.sql`_**  | **_`java.net`_** | **_`blueprint.type`_** |
@@ -253,6 +275,7 @@ Below is an list of the supported types:
 | enum 			|		|           | Timestamp |          |		    |
 
 #Finally
+
 The **BlueprintDao** is still in progress, so I cannot guarantee anything.
 Any grammar errors, contact me. My native language is Portuguese.
 Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
