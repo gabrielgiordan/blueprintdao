@@ -131,6 +131,13 @@ abstract class AbstractEngine<E> extends EngineSpecification<E> {
   }
 
   @Override
+  protected final void addPlaceholderValues(final Object... values) {
+    for (Object value : values) {
+      placeholderValues.add(value);
+    }
+  }
+
+  @Override
   protected final void addAllPlaceholderValues(final Collection<Object> values) {
     placeholderValues.addAll(values);
   }

@@ -358,8 +358,7 @@ class Engine<E> extends AbstractEngine<E> {
 
       if (resultSet.next()) {
         @SuppressWarnings("unchecked")
-        final
-        E row = (E) defaultEntity.clazz.newInstance();
+        final E row = (E) defaultEntity.clazz.newInstance();
 
         fillObject(row, objectsSettings.isFillObjects(), listsSettings.isFillLists());
 
@@ -374,6 +373,32 @@ class Engine<E> extends AbstractEngine<E> {
       closeResultSet();
     }
   }
+  
+  @Override
+  protected <T> T nextSingleRow(final ResultSetTypeListener<T> listener) throws BlueprintException {
+    try {
+      setFetchSize(1);
+      runQuery();
+
+      if (resultSet.next()) {
+        @SuppressWarnings("unchecked")
+        final E row = (E) defaultEntity.clazz.newInstance();
+
+        fillObject(row, objectsSettings.isFillObjects(), listsSettings.isFillLists());
+
+        listener.performAction(resultSet, row);
+      }
+
+      fillRemaining();
+
+    } catch (SQLException | InstantiationException | IllegalAccessException e) {
+      throw new BlueprintException(e);
+    } finally {
+      closeResultSet();
+    }
+    return listener.getReturn();
+  };
+
 
   @Override
   protected final void nextSeveralRows(final ResultSetListener listener) throws BlueprintException {
