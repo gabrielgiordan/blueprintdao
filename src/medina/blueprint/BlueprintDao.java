@@ -13,6 +13,8 @@
  */
 package medina.blueprint;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import medina.blueprint.dao.DaoLayer;
@@ -121,6 +123,21 @@ public abstract class BlueprintDao<E> extends Blueprint<E> implements DaoLayer<E
     } else {
       System.err.println("	Delete successfully, " + rowsAffected + " rows affected.");
     }
+  }
+  
+  public int countAll() {
+    setStatement(statementTool.select("COUNT(*)"));
+    
+    return nextSingleRow(new ResultSetTypeListener<Integer>() {
+      
+      @Override
+      protected void performAction(ResultSet resultSet, E next) throws BlueprintException,
+          SQLException {
+        
+        setReturn(resultSet.getInt(1));
+        
+      }
+    });
   }
 
   // Private Methods_________________________________________________________________ //
