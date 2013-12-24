@@ -237,7 +237,8 @@ When writing a join, be aware to select only the current table columns, so the q
 A second **_`Engine`_** alternative will be writed in future releases.
 
 ##Supported Types
-Moreover, the **BlueprintDao** supports all the common types, like **_`java.lang`_** types and the **_`java.sql`_** types. Below is an list of the supported types:
+Moreover, the **BlueprintDao** supports all the common types, like **_`java.lang`_** types and the **_`java.sql`_** types. 
+Below is an list of the supported types:
 
 | **_`java.lang`_**	| **_`java.math`_** | **_`java.util`_** | **_`java.sql`_**  | **_`java.net`_** | **_`blueprint.type`_** |
 | :-------------------: |:-------------:|:---------:|:---------:|:--------:|:--------------:|
@@ -252,7 +253,8 @@ Moreover, the **BlueprintDao** supports all the common types, like **_`java.lang
 | enum 			|		|           | Timestamp |          |		    |
 
 #Finally
-The **BlueprintDao** is still in progress, so I cannot guarantee anything.<br/>
-Any grammar errors, contact me. My native language is Portuguese.<br/>
+The **BlueprintDao** is still in progress, so I cannot guarantee anything.
+Any grammar errors, contact me. My native language is Portuguese.
 Also any suggestions, support and collaboration requests, I'll be very grateful to attend.
+
 Greetings from Brazil!
