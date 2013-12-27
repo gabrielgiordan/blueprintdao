@@ -145,7 +145,7 @@ When a sequence or an increment is used, the `personDao.save(person)` method wil
 
 #The Session
 
-A session is created for an more efficient management of the created daos, all of them will use the same connection and will share `PrepareStatement` mappings. A `PreparedStatement` is never created twice in a session. The `SessionManager` superclass will also control all the created entities and `ResultSet` mapped columns.
+A session is created for a more efficient management of the created daos, all of them will use the same connection and will share `PrepareStatement` mappings. A `PreparedStatement` is never created twice in a session. The `SessionManager` superclass will also control all the created entities and `ResultSet` mapped columns.
 
 When a session is ended, all the created `PreparedStatement` instances are closed, as the `Connection` passed as parameter. So a session should be created in manner that all the queries and transactions uses it.
 
