@@ -79,7 +79,7 @@ public class CountryDao extends Blueprint<Country> {
 
 ###The ResultSetListener
 
-Suppose you want to do whatever you want with each Country row in a query, so the **ResultSetListener** was created for this purpose. It returns the ResultSet and the Country on each row iteration. For example, suppose you have a non-mapped column and want to obtain it:
+Suppose you want to do whatever you want with each object row in a query, so the **ResultSetListener** was created for this purpose. It returns the ResultSet and the generic type object on each row iteration. For example, suppose you have a non-mapped column and want to obtain it:
 ```java
 public List<CountryRank> getLifeExpectancyRank(int rankSize) {
 		
