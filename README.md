@@ -1,10 +1,11 @@
 BlueprintDao
 ============
-#A Brief Introduction
+
+# A Brief Introduction
 The **BlueprintDao** is a light-weight **JDBC** convenience layer. All that can be done in **JDBC**
 can also be done on it. It attempts to overcome all the repetitive code, like setting parameters for statements or for retrieving queries; and provide useful tools to build statements, access all entities instances values and properties, transactions and so on.
 
-###Mapping entities with annotations:
+### Mapping entities with annotations:
 The **BlueprintDao** framework recognizes a table by the value
 annotated on an `@EntityTable` annotation.
 
@@ -44,7 +45,7 @@ In Java, the `SpecialFeatures` is an enum that implements the `EnumType` interfa
 
 `[TRAILERS, DELETED_SCENES, COMMENTARIES]`
 
-###Mapping inherited entities with annotations:
+### Mapping inherited entities with annotations:
 
 When an entity is inherited, the `@EntityID` is annotated above the class.
 ```java
@@ -56,7 +57,7 @@ public class Customer extends Person {
 	private String company;
 ```
 
-#The Blueprint
+# The Blueprint
 
 All DAO classes should extend the **_`Blueprint`_** class. This class contains useful protected methods to build your DAO class. Below is an example of a custom DAO class:
 ```java
@@ -77,7 +78,7 @@ public class CountryDao extends Blueprint<Country> {
 }
 ```
 
-###The ResultSetListener
+### The ResultSetListener
 
 Suppose you want to do whatever you want with each object row in a query, so the **ResultSetListener** was created for this purpose. It returns the ResultSet and the generic type object on each row iteration. For example, suppose you have a non-mapped column and want to obtain it:
 ```java
@@ -111,7 +112,7 @@ public List<CountryRank> getLifeExpectancyRank(int rankSize) {
 }
 ```
 
-#The BlueprintDao
+# The BlueprintDao
 
 The **_`BlueprintDao`_** class extends the **_`Blueprint`_** abstract class, so you can also use it to build your data access object class. The **_`BlueprintDao`_** is a prepared DAO, that contains all the **CRUD** methods of a common DAO class.
 
@@ -143,7 +144,7 @@ personDao.useIncrement(true);
 
 When a sequence or an increment is used, the `personDao.save(person)` method will generate and set the identity to the `Person` instance passed as parameter.
 
-#The Session
+# The Session
 
 A session is created for a more efficient management of the created daos, all of them will use the same connection and will share `PrepareStatement` mappings. A `PreparedStatement` is never created twice in a session. The `SessionManager` superclass will also control all the created entities and `ResultSet` mapped columns.
 
@@ -159,7 +160,7 @@ session.begin();
 session.end();
 ```
 
-###Starting a Transaction:
+### Starting a Transaction:
 
 Inside of a session scope, transactions are performed.
 
@@ -185,7 +186,7 @@ try {
 }
 ```
 
-#The Engine
+# The Engine
 
 The **_`Engine`_** class has a different way to execute queries than other frameworks, all DAO classes will make use of it. When a query is performed, the engine fill the identity and columns fields of instantiated objects while associating the foreign key to the instantiated object. When it's done, a subsequent query is performed automatically, with only the non-repeated foreign keys and their respective objects are filled with the foreign objects.
 
@@ -220,7 +221,7 @@ In this example, a query of 4079 cities with their respective countries, took 78
 
 The `world` database can be downloaded at the official [MySQL] (http://dev.mysql.com/doc/world-setup/en/index.html) site.
 
-####Restricting the Engine
+#### Restricting the Engine
 
 Restrictions can also be added to the `country` entity when making a `city` query. If some columns or objects aren't needed, you can get the restrictions configuration of the concerning DAO class:
 
@@ -256,7 +257,7 @@ When writing a join, be aware to select only the current table columns, so the q
 
 A second **_`Engine`_** alternative will be writed in future releases.
 
-##Supported Types
+## Supported Types
 
 Moreover, the **BlueprintDao** supports all the common types, like **_`java.lang`_** types and the **_`java.sql`_** types. 
 
@@ -274,7 +275,7 @@ Below is an list of the supported types:
 | String 		|		|           | Time	|          |		    |
 | enum 			|		|           | Timestamp |          |		    |
 
-#Finally
+# Finally
 
 The **BlueprintDao** is still in progress, so I cannot guarantee anything.
 Any grammar errors, contact me. My native language is Portuguese.
